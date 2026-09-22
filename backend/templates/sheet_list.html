@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}对照单册 · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>对照单册</h1>
+<form method="get" action="{% url 'sheet_list' %}">
+  <input name="code" value="{{ code }}" placeholder="按灯号查找，如 LH-01" style="max-width:260px" />
+  <button type="submit">查找</button>
+</form>
+{% if can_write %}<p><a href="{% url 'sheet_create' %}">新开对照单</a></p>{% endif %}
+<table>
+  <thead>
+    <tr><th>单号</th><th>灯号一</th><th>灯号二</th><th>亮度差</th><th>偏角差</th><th>状态</th><th>留存时间</th><th></th></tr>
+  </thead>
+  <tbody>
+  {% for sheet in sheets %}
+    <tr>
+      <td>#{{ sheet.pk }}</td>
+      <td>{{ sheet.first_code }}</td>
+      <td>{{ sheet.second_code }}</td>
+      <td>{{ sheet.brightness_diff }}</td>
+      <td>{{ sheet.bearing_diff }}</td>
+      <td>
+        {% if sheet.source_changed %}
+          <span class="tag changed">来源已变动</span>
+        {% else %}
+          <span class="tag intact">留存原样</span>
+        {% endif %}
+      </td>
+      <td>{{ sheet.created_at|date:"Y-m-d H:i" }}</td>
+      <td><a href="{% url 'sheet_detail' sheet.pk %}">打开</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="8">还没有留存的对照单</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

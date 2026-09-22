@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}对照单 #{{ sheet.pk }} · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>对照单 #{{ sheet.pk }}</h1>
+{% if sheet.source_changed %}
+  <p class="bad">来源已变动：留存后实测被改正，本单仍显示留存时的存档差数。</p>
+{% endif %}
+<table>
+  <thead>
+    <tr><th></th><th>灯号</th><th>判词</th><th>实测光强（留存时）</th><th>方位偏差（留存时）</th><th>来源</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>实测一</td>
+      <td>{{ sheet.first_code }}</td>
+      <td class="{% if sheet.first_verdict == '合格' %}ok{% else %}bad{% endif %}">{{ sheet.first_verdict }}</td>
+      <td>{{ sheet.first_measured_cd }}</td>
+      <td>{{ sheet.first_bearing_error_deg }} 度</td>
+      <td>
+        {% if sheet.first_changed %}<span class="tag changed">来源已变动</span>{% else %}<span class="tag intact">原样</span>{% endif %}
+        {% if sheet.first %}<a href="{% url 'detail' sheet.first.pk %}">当前实测</a>{% endif %}
+      </td>
+    </tr>
+    <tr>
+      <td>实测二</td>
+      <td>{{ sheet.second_code }}</td>
+      <td class="{% if sheet.second_verdict == '合格' %}ok{% else %}bad{% endif %}">{{ sheet.second_verdict }}</td>
+      <td>{{ sheet.second_measured_cd }}</td>
+      <td>{{ sheet.second_bearing_error_deg }} 度</td>
+      <td>
+        {% if sheet.second_changed %}<span class="tag changed">来源已变动</span>{% else %}<span class="tag intact">原样</span>{% endif %}
+        {% if sheet.second %}<a href="{% url 'detail' sheet.second.pk %}">当前实测</a>{% endif %}
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>亮度差 <strong>{{ sheet.brightness_diff }}</strong>，偏角差 <strong>{{ sheet.bearing_diff }}</strong> 度（留存时由服务端写入存档）。</p>
+<p>留存人 {{ sheet.created_by }} · {{ sheet.created_at|date:"Y-m-d H:i" }}</p>
+<p><a href="{% url 'sheet_list' %}">返回对照单册</a></p>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}新开对照单 · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>新开对照单</h1>
+{% if error %}<p class="err">{{ error }}</p>{% endif %}
+<form class="card" method="post">
+  {% csrf_token %}
+  <label>实测一</label>
+  <select name="first_id">
+    {% for row in inspections %}
+      <option value="{{ row.pk }}">#{{ row.pk }} · {{ row.aid_code }} · 实测 {{ row.measured_cd }} · {{ row.verdict }}</option>
+    {% endfor %}
+  </select>
+  <label>实测二</label>
+  <select name="second_id">
+    {% for row in inspections %}
+      <option value="{{ row.pk }}">#{{ row.pk }} · {{ row.aid_code }} · 实测 {{ row.measured_cd }} · {{ row.verdict }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit">留存对照单</button>
+</form>
+<p>亮度差与偏角差由服务端在留存时算好并写入存档，此后页面只读存档值，不临时相减。</p>
+{% endblock %}
