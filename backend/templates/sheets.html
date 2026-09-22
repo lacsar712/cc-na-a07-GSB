@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>对照单册</h1>
+{% if can_write %}<p><a href="{% url 'sheet_create' %}">留存新对照单</a></p>{% endif %}
+<form method="get">
+  <label>按灯号查找</label>
+  <input name="code" value="{{ code }}" placeholder="如 LH-01" />
+  <button type="submit">查找</button>
+</form>
+<table>
+  <thead><tr><th>灯号甲</th><th>灯号乙</th><th>亮度差</th><th>偏角差</th><th>留存时间</th><th></th></tr></thead>
+  <tbody>
+  {% for sheet in sheets %}
+    <tr>
+      <td>{{ sheet.left_code }}</td>
+      <td>{{ sheet.right_code }}</td>
+      <td>{{ sheet.cd_diff|floatformat:"-1" }}</td>
+      <td>{{ sheet.bearing_diff|floatformat:"-1" }}</td>
+      <td>{{ sheet.created_at|date:"Y-m-d H:i" }}</td>
+      <td><a href="{% url 'sheet_detail' sheet.pk %}">打开</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6">还没有留存的对照单</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

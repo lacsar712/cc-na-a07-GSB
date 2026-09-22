@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>对照单 #{{ sheet.pk }}</h1>
+{% if sheet.source_changed %}
+  <p class="bad">来源已变动：其中一笔实测在留存后被改正，本单仍显示留存时的差。</p>
+{% endif %}
+<table>
+  <thead><tr><th></th><th>灯号</th><th>留存时光强</th><th>留存时偏角</th><th>判词</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>实测甲</td>
+      <td>{{ sheet.left_code }}</td>
+      <td>{{ sheet.left_measured_cd|floatformat:"-1" }}</td>
+      <td>{{ sheet.left_bearing_deg|floatformat:"-1" }}</td>
+      <td class="{% if sheet.left_verdict == '合格' %}ok{% else %}bad{% endif %}">{{ sheet.left_verdict }}</td>
+    </tr>
+    <tr>
+      <td>实测乙</td>
+      <td>{{ sheet.right_code }}</td>
+      <td>{{ sheet.right_measured_cd|floatformat:"-1" }}</td>
+      <td>{{ sheet.right_bearing_deg|floatformat:"-1" }}</td>
+      <td class="{% if sheet.right_verdict == '合格' %}ok{% else %}bad{% endif %}">{{ sheet.right_verdict }}</td>
+    </tr>
+  </tbody>
+</table>
+<p>亮度差 {{ sheet.cd_diff|floatformat:"-1" }}，偏角差 {{ sheet.bearing_diff|floatformat:"-1" }}</p>
+{% if sheet.source_changed %}
+  <h2>来源现状</h2>
+  <p>
+    {% if sheet.left %}{{ sheet.left_code }} 现光强 {{ sheet.left.measured_cd|floatformat:"-1" }}，现判 {{ sheet.left.verdict }}{% else %}{{ sheet.left_code }} 的记录已删除{% endif %}；
+    {% if sheet.right %}{{ sheet.right_code }} 现光强 {{ sheet.right.measured_cd|floatformat:"-1" }}，现判 {{ sheet.right.verdict }}{% else %}{{ sheet.right_code }} 的记录已删除{% endif %}。
+  </p>
+{% endif %}
+<p>留存人 {{ sheet.created_by }}，留存于 {{ sheet.created_at|date:"Y-m-d H:i" }}</p>
+<p><a href="{% url 'sheet_list' %}">返回对照单册</a></p>
+{% endblock %}
